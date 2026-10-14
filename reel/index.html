@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Daniela Galli</title>
+  <title>Daniela Galli · Demo Reel</title>
   <meta name="robots" content="noindex">
   <style>
     body { margin: 0; min-height: 100vh; background: #0e0e0f; color: #ececec;
@@ -18,7 +18,7 @@
 
   <script>
     // ===== TO CHANGE THE VIDEO: paste the new Vimeo or YouTube link between the quotes =====
-    var VIDEO = "VIMEO_LINK_HERE";
+    var VIDEO = "https://vimeo.com/danielagalli/dg-reel";
   </script>
 
   <div class="player" id="player"></div>
@@ -26,15 +26,25 @@
   <p>Daniela Galli</p>
   <script>
     // Turns the link above into a video player. No need to touch this part.
-    var m, src = VIDEO;
+    var box = document.getElementById("player");
+    function show(src) {
+      box.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+    }
+    var m;
     if ((m = VIDEO.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([0-9a-f]+))?/i))) {
       var h = m[2] || (VIDEO.match(/[?&]h=([0-9a-f]+)/i) || [])[1];
-      src = "https://player.vimeo.com/video/" + m[1] + (h ? "?h=" + h : "");
+      show("https://player.vimeo.com/video/" + m[1] + (h ? "?h=" + h : ""));
+    } else if (/vimeo\.com\//i.test(VIDEO)) {
+      // Named Vimeo links (like vimeo.com/name/video): ask Vimeo for the video number.
+      fetch("https://vimeo.com/api/oembed.json?url=" + encodeURIComponent(VIDEO.split("?")[0]))
+        .then(function (r) { return r.json(); })
+        .then(function (d) { show("https://player.vimeo.com/video/" + d.video_id); })
+        .catch(function () { box.innerHTML = '<p style="padding:16px"><a href="' + VIDEO + '">Watch the video on Vimeo</a></p>'; });
     } else if ((m = VIDEO.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/))) {
-      src = "https://www.youtube-nocookie.com/embed/" + m[1] + "?rel=0";
+      show("https://www.youtube-nocookie.com/embed/" + m[1] + "?rel=0");
+    } else {
+      show(VIDEO);
     }
-    document.getElementById("player").innerHTML =
-      '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
   </script>
 </body>
 </html>
