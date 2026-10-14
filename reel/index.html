@@ -30,15 +30,16 @@
     function show(src) {
       box.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
     }
+    var VIMEO_OPTIONS = "title=0&byline=0&portrait=0"; // hides the video name, your name and profile picture
     var m;
     if ((m = VIDEO.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([0-9a-f]+))?/i))) {
       var h = m[2] || (VIDEO.match(/[?&]h=([0-9a-f]+)/i) || [])[1];
-      show("https://player.vimeo.com/video/" + m[1] + (h ? "?h=" + h : ""));
+      show("https://player.vimeo.com/video/" + m[1] + "?" + VIMEO_OPTIONS + (h ? "&h=" + h : ""));
     } else if (/vimeo\.com\//i.test(VIDEO)) {
       // Named Vimeo links (like vimeo.com/name/video): ask Vimeo for the video number.
       fetch("https://vimeo.com/api/oembed.json?url=" + encodeURIComponent(VIDEO.split("?")[0]))
         .then(function (r) { return r.json(); })
-        .then(function (d) { show("https://player.vimeo.com/video/" + d.video_id); })
+        .then(function (d) { show("https://player.vimeo.com/video/" + d.video_id + "?" + VIMEO_OPTIONS); })
         .catch(function () { box.innerHTML = '<p style="padding:16px"><a href="' + VIDEO + '">Watch the video on Vimeo</a></p>'; });
     } else if ((m = VIDEO.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/))) {
       show("https://www.youtube-nocookie.com/embed/" + m[1] + "?rel=0");
